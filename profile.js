@@ -736,3 +736,188 @@
 //     });
 //   }
 // });
+
+
+
+
+
+
+
+
+
+
+
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC8FWZUGW7MT5l0JRcY949HtVjGFpORO68",
+  authDomain: "smit-firebase-project-e6c21.firebaseapp.com",
+  projectId: "smit-firebase-project-e6c21",
+  storageBucket: "smit-firebase-project-e6c21.appspot.com",
+  messagingSenderId: "580046850281",
+  appId: "1:580046850281:web:e09d648db16b1605d1c878",
+};
+
+// Initialize Firebase App, Firestore, and Auth
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// // Function to Fetch Data from Firestore
+// async function fetchData() {
+//   const loader = document.getElementById("loader");
+//   const dataContainer = document.getElementById("data-container");
+
+//   loader.style.display = "block"; // Show loader
+//   dataContainer.innerHTML = ""; // Clear previous data
+
+//   try {
+//     const querySnapshot = await getDocs(collection(db, "User Data"));
+
+//     loader.style.display = "none"; // Hide loader after data is fetched
+
+//     if (querySnapshot.empty) {
+//       Swal.fire({
+//         icon: "info",
+//         title: "No Data",
+//         text: "No data available to display.",
+//       });
+//       return;
+//     }
+
+//     querySnapshot.forEach((doc) => {
+//       const data = doc.data();
+//       if (data && data.username && data.email) {
+//         displayData(data);
+//       }
+//     });
+//   } catch (error) {
+//     loader.style.display = "none"; // Hide loader if an error occurs
+//     Swal.fire({
+//       icon: "error",
+//       title: "Error",
+//       text: "Failed to fetch data from Firestore.",
+//     });
+//   }
+// }
+// Function to Fetch Data for the Logged-In User
+async function fetchData() {
+  const loader = document.getElementById("loader");
+  const dataContainer = document.getElementById("data-container");
+
+  loader.style.display = "block"; // Show loader
+  dataContainer.innerHTML = ""; // Clear previous data
+
+  try {
+    // Get the currently logged-in user
+    const user = auth.currentUser;
+
+    if (user) {
+      // Fetch user-specific data from Firestore based on UID
+      const querySnapshot = await getDocs(collection(db, "User Data"));
+
+      loader.style.display = "none"; // Hide loader after data is fetched
+
+      let userFound = false;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        if (data && data.uid === user.uid) {
+          userFound = true; // We found the logged-in user's data
+          displayData(data);
+        }
+      });
+
+      if (!userFound) {
+        Swal.fire({
+          icon: "info",
+          title: "No Data Found",
+          text: "No data available for this user.",
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "User Not Found",
+        text: "No user is currently logged in.",
+      });
+    }
+  } catch (error) {
+    loader.style.display = "none"; // Hide loader if an error occurs
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to fetch data from Firestore.",
+    });
+  }
+}
+
+// Function to Display Data in Cards
+function displayData(data) {
+  const dataContainer = document.getElementById("data-container");
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-content">
+      <h2>${data.username}</h2>
+      <p><strong>Email:</strong> ${data.email}</p>
+      <p><strong>UID:</strong> ${data.uid}</p>
+      <p><strong>Created At:</strong> ${data.createdAt}</p>
+    </div>
+  `;
+  dataContainer.appendChild(card);
+}
+
+// Logout Functionality
+document.getElementById("logout-btn").addEventListener("click", () => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You will be logged out.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, logout",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      signOut(auth)
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: "Logged Out",
+            text: "You have been logged out.",
+          }).then(() => {
+            window.location.href = "index.html"; // Redirect to login page
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Logout failed.",
+          });
+        });
+    }
+  });
+});
+
+// Check User Authentication State
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    fetchData();
+  } else {
+    Swal.fire({
+      icon: "info",
+      title: "Not Logged In",
+      text: "Please log in first.",
+    }).then(() => {
+      window.location.href = "index.html";
+    });
+  }
+});
