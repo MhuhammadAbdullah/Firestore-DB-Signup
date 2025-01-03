@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="profile.css"> <!-- Include your custom CSS file here -->
+</head>
+<body>
+<!-- 
+  <div class="profile-container">
+    <div class="profile-card">
+      <h2>User Profile</h2>
+      <div class="profile-info">
+        <p><strong>Username:</strong> <span id="profile-username"></span></p>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p><strong>User ID:</strong> <span id="profile-uid"></span></p>
+        <p><strong>Account Created:</strong> <span id="profile-createdAt"></span></p>
+      </div>
+      <button id="logout-btn" class="logout-btn">Logout</button>
+    </div>
+  </div> -->
+
+  <header>
+    <h1>User Dashboard</h1>
+    <button id="logout-btn">Logout</button>
+  </header>
+  <div id="data-container"></div>
+  <div id="loader" class="loader"></div>
+  <div id="data-container"></div>
+  
+
+
+
+  <!-- <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"></script> -->
+  <script type="module" src="app.js"></script> <!-- Your profile page script -->
+  <script type="module" src="profile.js"></script> <!-- Your profile page script -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>
